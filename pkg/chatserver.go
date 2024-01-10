@@ -19,6 +19,7 @@ type messageHandle struct {
 	mu   sync.Mutex
 }
 
+// @todo global variable messageHandleObject error check
 var messageHandleObject = messageHandle{}
 
 type ChatServer struct {
@@ -28,6 +29,7 @@ type ChatServer struct {
 // define ChatService
 func (is *ChatServer) ChatService(csi Services_ChatServiceServer) error {
 
+	// @todo rand.Intn(1e6) clientUniqueCode duplication check
 	clientUniqueCode := rand.Intn(1e6)
 	errch := make(chan error)
 
@@ -77,7 +79,7 @@ func sendToStream(csi_ Services_ChatServiceServer, clientUniqueCode_ int, errch_
 
 		//loop through messages in MQue
 		for {
-
+			// @todo time.Sleep efficiency check
 			time.Sleep(500 * time.Millisecond)
 
 			messageHandleObject.mu.Lock()
