@@ -7,6 +7,7 @@ import (
 	"grpcChatServer/pkg"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -35,7 +36,11 @@ func main() {
 	//call ChatService to create a stream
 	client := pkg.NewServicesClient(conn)
 
-	stream, err := client.ChatService(context.Background())
+	// context set
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, pkg.RoomNumber(10), int32(10))
+
+	stream, err := client.ChatService(ctx)
 	if err != nil {
 		log.Fatalf("Failed to call ChatService :: %v", err)
 	}
@@ -56,6 +61,7 @@ func main() {
 type clienthandle struct {
 	stream     pkg.Services_ChatServiceClient
 	clientName string
+	roomNumber int32
 }
 
 func (ch *clienthandle) clientConfig() {
@@ -68,6 +74,18 @@ func (ch *clienthandle) clientConfig() {
 	}
 	ch.clientName = strings.Trim(name, "\r\n")
 
+	fmt.Printf("Room Number : ")
+	room, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf(" Failed to read from console :: %v", err)
+	}
+
+	roomNumberStr := strings.Trim(room, "\r\n")
+	roomNumber, err := strconv.Atoi(roomNumberStr)
+	if err != nil {
+		log.Fatalf(" Failed to convert from console :: %v", err)
+	}
+	ch.roomNumber = int32(roomNumber)
 }
 
 // send message

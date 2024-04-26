@@ -8,6 +8,7 @@ message FromClient {
 
     string name = 1;
     string body = 2;
+    int32 room_number = 3;  // 채팅방 번호 추가
 }
 
 message FromServer {
